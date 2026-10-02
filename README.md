@@ -22,13 +22,28 @@ One elegant, light-themed command center for running **Clovian Tech** and **Blac
 
 ```bash
 npm install
-npm run dev       # http://localhost:5173
-npm run build     # static site in dist/ (works on Vercel, Netlify, GitHub Pages)
+npm run dev       # http://localhost:5173 — passcode "dev" (or $APP_PASSCODE)
+npm run build     # static site in dist/ plus the /api function, deployed on Vercel
 ```
 
-## Data
+In development, `/api/data` is served by Vite and stored in `.data/workspace.json`.
 
-The app is **local-first**: all data is stored in your browser (localStorage), and nothing is sent to a server. It loads demo data the first time so you can explore. Go to **Settings → Clear all data** to start fresh, and use **Download backup / Restore backup** to move data between devices. You can also set your currency there (₹ INR by default; also $, Rs, AED, £, €, C$, A$).
+## Data & sync
+
+Data syncs across devices. The whole workspace is one JSON document in a **private Vercel Blob store**. It is read and written through `api/data.ts`, and every request needs the passcode.
+
+- **Unlock:** open the app on any device and enter the passcode. The device remembers it until you use **Settings → Sign out of this device**.
+- **Saving:** every change is saved automatically within about a second. Other open devices pick it up within 20 seconds, or straight away when you switch back to them. The badge in the top bar shows *Synced / Saving / Offline*.
+- **Two devices editing at once:** changes are merged record by record. If two devices edit the same record at the same moment, the later save wins. Edits made offline sync when the connection returns.
+- **First run:** while the cloud is empty, the first device chooses to start empty or upload the data in that browser.
+- **Backup:** **Settings → Download backup / Restore backup** still work. A restore replaces the data on every device.
+
+Vercel project settings it needs:
+
+| Variable | What it is |
+|---|---|
+| `BLOB_READ_WRITE_TOKEN` | Added automatically when the Blob store is connected to the project |
+| `APP_PASSCODE` | The unlock passcode. To change it, edit it in Vercel → Settings → Environment Variables and redeploy. Devices then ask for the new one. |
 
 ## Tech
 

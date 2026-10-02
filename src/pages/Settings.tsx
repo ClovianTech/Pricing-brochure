@@ -1,15 +1,17 @@
 import { useRef, useState } from 'react';
-import { Database, Download, RotateCcw, Trash2, Upload, User, Wallet, X, Plus, ShieldCheck } from 'lucide-react';
+import { Database, Download, RotateCcw, Trash2, Upload, User, Wallet, X, Plus, ShieldCheck, LogOut } from 'lucide-react';
 import { useStore, type DataState } from '@/store/store';
 import { Button, Card, CardHeader, Field, Input, PageHeader, Select } from '@/components/ui';
 import { CURRENCIES } from '@/lib/constants';
 import { downloadFile, today } from '@/lib/utils';
 import { confirmDialog, toast } from '@/components/ui/feedback';
+import { hasUnsyncedChanges, signOut, useSync } from '@/store/sync';
 
 export default function Settings() {
   const st = useStore();
   const fileRef = useRef<HTMLInputElement>(null);
   const [acc, setAcc] = useState('');
+  const lastSyncedAt = useSync((s) => s.lastSyncedAt);
   const counts = [['Transactions', st.transactions.length], ['Projects', st.projects.length], ['Clients', st.clients.length], ['Leads', st.leads.length], ['Personal entries', st.personal.length]] as const;
 
   const backup = () => {
@@ -52,17 +54,18 @@ export default function Settings() {
         </div>
       </Card>
       <Card>
-        <CardHeader title="Your data" subtitle="Stored privately in this browser. Back up regularly." icon={<Database size={17} />} />
+        <CardHeader title="Your data" subtitle="Synced to your private cloud workspace and shared across your devices." icon={<Database size={17} />} />
         <div className="px-5 pb-5 space-y-5">
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
             {counts.map(([l, n]) => <div key={l} className="rounded-xl bg-canvas ring-1 ring-line p-3"><div className="num text-xl font-bold">{n}</div><div className="text-[11px] text-ink-mute">{l}</div></div>)}
           </div>
-          <div className="flex items-start gap-3 rounded-xl p-3 bg-emerald-50/70 ring-1 ring-emerald-200 text-sm text-emerald-800"><ShieldCheck size={18} className="shrink-0 mt-0.5" />Nothing leaves your device. Use backup / restore to move data between devices.</div>
+          <div className="flex items-start gap-3 rounded-xl p-3 bg-emerald-50/70 ring-1 ring-emerald-200 text-sm text-emerald-800"><ShieldCheck size={18} className="shrink-0 mt-0.5" /><span>Every change syncs automatically to every device you unlock with your passcode{lastSyncedAt ? ` (last synced ${new Date(lastSyncedAt).toLocaleTimeString()})` : ''}. Clearing or restoring data here changes it everywhere, so download a backup first.</span></div>
           <div className="flex flex-wrap gap-2">
             <Button variant="primary" icon={<Download size={16} />} onClick={backup}>Download backup</Button>
             <Button icon={<Upload size={16} />} onClick={() => fileRef.current?.click()}>Restore backup</Button>
             <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) restore(f); e.target.value = ''; }} />
             <Button icon={<RotateCcw size={16} />} onClick={async () => { if (await confirmDialog({ title: 'Load demo data?', body: 'Replaces all current data with sample data.', confirmLabel: 'Load demo', danger: true })) { st.loadDemo(); toast('Demo data loaded'); } }}>Load demo data</Button>
+            <Button icon={<LogOut size={16} />} onClick={async () => { if (await confirmDialog({ title: 'Sign out of this device?', body: hasUnsyncedChanges() ? 'Some changes have not synced yet and will be lost. Your cloud data stays safe.' : 'This device forgets the passcode and its local copy. Your cloud data stays safe.', confirmLabel: 'Sign out', danger: hasUnsyncedChanges() })) signOut(); }}>Sign out of this device</Button>
             <Button variant="danger" icon={<Trash2 size={16} />} onClick={async () => { if (await confirmDialog({ title: 'Start fresh?', body: 'This deletes ALL transactions, projects, clients, leads and personal entries. Download a backup first.', confirmLabel: 'Delete everything', danger: true })) { st.clearAll(); toast('All data cleared', 'info'); } }}>Clear all data</Button>
           </div>
         </div>

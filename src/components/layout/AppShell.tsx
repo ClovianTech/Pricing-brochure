@@ -8,6 +8,7 @@ import type { Scope } from '@/lib/types';
 import { NAV } from './nav';
 import { ScopeMark, scopeName } from './Brand';
 import { Avatar } from '@/components/ui';
+import { SyncBadge } from '@/features/SyncGate';
 
 const SCOPES: Scope[] = ['clovian', 'blackx', 'all'];
 
@@ -180,6 +181,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               </>
             )}
             <div className="flex-1" />
+            <SyncBadge />
             <button onClick={() => setPalette(true)} className="hidden md:flex items-center gap-2 h-10 w-56 xl:w-72 px-3 rounded-xl bg-canvas ring-1 ring-line text-sm text-ink-faint hover:ring-accent/40 transition">
               <Search size={16} /> Search anything…
               <span className="ml-auto flex items-center gap-0.5 text-[11px] font-semibold text-ink-mute bg-white ring-1 ring-line rounded-md px-1.5 h-5"><Command size={11} />K</span>

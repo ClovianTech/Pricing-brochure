@@ -4,6 +4,7 @@ import { AppShell } from '@/components/layout/AppShell';
 import { FormHost } from '@/features/forms';
 import { CommandPalette } from '@/features/CommandPalette';
 import { FeedbackHost } from '@/components/ui/feedback';
+import { SyncGate } from '@/features/SyncGate';
 import Dashboard from '@/pages/Dashboard';
 
 const Finance = lazy(() => import('@/pages/Finance'));
@@ -24,6 +25,7 @@ const Loading = () => (
 export default function App() {
   return (
     <HashRouter>
+      <SyncGate>
       <AppShell>
         <Suspense fallback={<Loading />}>
           <Routes>
@@ -42,6 +44,7 @@ export default function App() {
       </AppShell>
       <FormHost />
       <CommandPalette />
+      </SyncGate>
       <FeedbackHost />
     </HashRouter>
   );
