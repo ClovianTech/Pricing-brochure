@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --accent: 43 108 176;
+  --accent2: 56 189 248;
+  --accent-deep: 22 52 92;
+  color-scheme: light;
+}
+[data-theme-ws='blackx'] { --accent: 124 58 237; --accent2: 236 72 153; --accent-deep: 24 24 27; }
+[data-theme-ws='personal'] { --accent: 13 148 136; --accent2: 132 204 22; --accent-deep: 19 78 74; }
+[data-theme-ws='all'] { --accent: 79 70 229; --accent2: 56 189 248; --accent-deep: 30 27 75; }
+
+html, body, #root { height: 100%; }
+body {
+  @apply bg-canvas text-ink font-sans antialiased;
+  background-image:
+    radial-gradient(900px 500px at 100% -10%, rgb(var(--accent2) / .10), transparent 60%),
+    radial-gradient(800px 500px at -10% 0%, rgb(var(--accent) / .09), transparent 60%);
+  background-attachment: fixed;
+  transition: background-image .4s;
+}
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(15,27,45,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15,27,45,.035) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse at top, black 20%, transparent 70%);
+}
+
+@layer components {
+  .card { @apply bg-white/80 backdrop-blur-xl border border-white rounded-2xl shadow-card ring-1 ring-line/70; }
+  .card-hover { @apply transition duration-200 hover:shadow-lift hover:-translate-y-0.5; }
+  .input {
+    @apply w-full h-10 rounded-xl border border-line bg-white/90 px-3 text-sm text-ink placeholder:text-ink-faint
+           outline-none transition focus:border-accent/60 focus:ring-4 focus:ring-accent/10;
+  }
+  textarea.input { @apply h-auto py-2.5 leading-relaxed; }
+  .label { @apply block text-[11px] font-semibold uppercase tracking-wider text-ink-mute mb-1.5; }
+  .chip {
+    @apply inline-flex items-center gap-1.5 h-8 px-3 rounded-full border border-line bg-white/80 text-xs font-semibold text-ink-soft
+           transition hover:border-accent/40 hover:text-accent whitespace-nowrap;
+  }
+  .chip-on { @apply border-accent/50 bg-accent/10 text-accent; }
+  .num { @apply font-display tabular-nums tracking-tight; }
+  .text-gradient { @apply bg-clip-text text-transparent bg-gradient-to-r from-accentdeep via-accent to-accent2; }
+  .table-head { @apply text-[11px] font-semibold uppercase tracking-wider text-ink-mute text-left; }
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #d7dfea; border-radius: 99px; border: 3px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-track { background: transparent; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
+.recharts-cartesian-axis-tick-value { font-size: 11px; fill: #6b7788; }
+.recharts-tooltip-cursor { fill: rgb(var(--accent) / .06); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
